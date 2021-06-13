@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,13 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 Route::post('/register', 'App\Http\Controllers\JwtAuthController@register');
 Route::post('/login', 'App\Http\Controllers\JwtAuthController@login');
 Route::post('/signout', 'App\Http\Controllers\JwtAuthController@signout');
-Route::post('/token-refresh', 'App\Http\Controllers\JwtAuthController@refresh');
+Route::post('/forgotPassword', 'App\Http\Controllers\JwtAuthController@forgotPassword');
+Route::post('/resetPassword', 'App\Http\Controllers\JwtAuthController@resetPassword');
+
+
 
 
