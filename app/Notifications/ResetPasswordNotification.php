@@ -18,7 +18,7 @@ class ResetPasswordNotification extends Notification
      *
      * @return void
      */
-    public function __construct(string $token)
+    public function __construct($token)
     {
         $this->token = $token;
     }
@@ -40,14 +40,13 @@ class ResetPasswordNotification extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail()
+    public function toMail($temp)
     {
         return (new MailMessage)
-                    ->subject(Lang::get('Reset Password Notification'))
+                    ->subject(Lang::get('Reset Password Link!'))
                     ->line(Lang::get('You are receiving this email because we received a request for password reset'))
                     ->line(Lang::get('Copy the token'))
                     ->with($this->token)
-                    ->action('Click to reset password', $this->token)
                     ->line('If you did not request a password reset, no further action is required!');
                    
     }

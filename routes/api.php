@@ -20,5 +20,8 @@ Route::post('/forgotPassword', 'App\Http\Controllers\JwtAuthController@forgotPas
 Route::post('/resetPassword', 'App\Http\Controllers\JwtAuthController@resetPassword');
 
 
+Route::post('/addNotes','App\Http\Controllers\NoteController@createUserNote' );
+
+
 
 
