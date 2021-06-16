@@ -6,9 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\PasswordReset;
 use App\Notifications\ResetPasswordNotification;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\password;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JwtAuthController extends Controller
 {
@@ -27,8 +26,12 @@ class JwtAuthController extends Controller
             'password' => 'required|min:5',
         ]);
 
-        if ($req->fails()) {
-            return response()->json($req->errors(), 422);
+        $email = $request->get('email');
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"]);
         }
 
         if (!$token = auth()->attempt($req->validated())) {
@@ -62,12 +65,23 @@ class JwtAuthController extends Controller
         $req = FacadesValidator::make($request->all(), [
             'firstName' => 'required|string|between:2,100',
             'lastName' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:user_registration',
-            'password' => 'required|string|confirmed|min:6',
+            'email' => 'required|string|email|max:100|unique:user_registration'
         ]);
 
-        if ($req->fails()) {
-            return response()->json(['status' => 400, 'message' => 'Invalid credentials']);
+        $req2 = FacadesValidator::make($request->all(), [
+            'password' => 'required|required_with:password_confirmation|min:3',
+            'password_confirmation' => 'required|same:password'
+        ]);
+
+        $email = $request->get('email');
+
+        $userEmail = User::where('email', $email)->first();
+        if ($userEmail) {
+            return response()->json(['status' => '422', 'message' => "This email already exists...."]);
+        }
+
+        if ($req2->fails()) {
+            return response()->json(['status' => 400, 'message' => "Password doesn't match"]);
         }
 
         $user = User::create(array_merge(
@@ -120,9 +134,6 @@ class JwtAuthController extends Controller
      */
     public function forgotpassword(Request $request)
     {
-        $validate = FacadesValidator::make($request->all(), [
-            'email' => 'required|email',
-        ]);
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             return response()->json(['status' => 401, 'message' => "we can't find a user with that email address."]);
@@ -132,7 +143,7 @@ class JwtAuthController extends Controller
 
             [
                 'email' => $user->email,
-                'token' => Str::random(60)
+                'token' => JWTAuth::fromUser($user)
             ]
         );
         if ($user && $passwordReset) {
@@ -141,15 +152,6 @@ class JwtAuthController extends Controller
         return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
     }
 
-
-    /**
-     * function to validate the token and new password and modify it in the database
-     * @param [string] token
-     * @param [string] new_password
-     * @param [string] confirm_password
-     *  
-     * @return password reset succesfull message or error message
-     */
     public function resetPassword(Request $request)
     {
         $validate = FacadesValidator::make($request->all(), [
@@ -162,7 +164,7 @@ class JwtAuthController extends Controller
         }
 
         $passwordReset = PasswordReset::where([
-            ['token', $request->token]
+            ['token', $request->bearerToken()]
         ])->first();
 
         if (!$passwordReset) {
