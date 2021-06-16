@@ -9,7 +9,6 @@ use App\Models\NotesModel;
 
 class NoteController extends Controller
 {
- 
     /**
      * function to create new note based on authentication
      * 
@@ -23,16 +22,17 @@ class NoteController extends Controller
         $note->user_id = Auth::user()->id;
         $note->save();
 
-        return response()->json(['status' => 200, 'id' => $note->user_id , 'message' => 'Note created']);
+        return response()->json(['status' => 200, 'message' => 'Note created']);
     }
 
     /**
      * function to get all the notes of the user
+     * 
+     * @return notes tables data with respective to the authorization
      */
-    public function getNotes(){
+    public function getNotes()
+    {
         $notes = NotesModel::all();
         return User::find($notes->user_id = auth()->id())->NotesModel;
     }
-
-
 }
