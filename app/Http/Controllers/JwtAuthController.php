@@ -152,6 +152,14 @@ class JwtAuthController extends Controller
         return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
     }
 
+    /**
+     * function to reset the password to the respective user id based on email and bearer token
+     * @param [new_password] takes new password 
+     * @param [confirm_password] takes password same as new_password
+     * @param bearerToken() token passed through authorization header
+     * 
+     * @return success message or error based on validation
+     */
     public function resetPassword(Request $request)
     {
         $validate = FacadesValidator::make($request->all(), [
