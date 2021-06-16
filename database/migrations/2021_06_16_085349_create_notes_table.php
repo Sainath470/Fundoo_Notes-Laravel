@@ -15,15 +15,15 @@ class CreateNotesTable extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('notes_id');
+            $table->unsignedInteger('user_id');
             $table->string('title');
-            $table->string('notes');
-            $table->timestamps();
-            $table->foreign('notes_id')
+            $table->string('description');
+            $table->foreign('user_id')
                   ->references('id')
                   ->on('users')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
+            $table->timestamps();
         });
     }
 
@@ -37,4 +37,3 @@ class CreateNotesTable extends Migration
         Schema::dropIfExists('notes');
     }
 }
-

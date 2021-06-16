@@ -58,8 +58,8 @@ class User extends Authenticatable implements JWTSubject
         $this->notify(new ResetPasswordNotification($token));
     }
 
-    public function noteModel(){
-        return $this->hasMany(NoteModel::class);
+    public function notesModel(){
+        return $this->hasMany(NotesModel::class);
     }
 
 }

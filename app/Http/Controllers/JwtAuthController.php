@@ -6,9 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\PasswordReset;
 use App\Notifications\ResetPasswordNotification;
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\password;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 

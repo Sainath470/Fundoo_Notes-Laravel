@@ -2,22 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\NoteModel;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\NotesModel;
 
 class NoteController extends Controller
 {
-    public function getNotes(){
-        $userNotes = NoteModel::all();
-        return User::find($userNotes->user_id = auth()->id())->noteModel;
+ 
+    /**
+     * function to create new note based on authentication
+     * 
+     * @return response
+     */
+    public function createNote(Request $request)
+    {
+        $note = new NotesModel;
+        $note->title = $request->input('title');
+        $note->description = $request->input('description');
+        $note->user_id = Auth::user()->id;
+        $note->save();
+
+        return response()->json(['status' => 200, 'id' => $note->user_id , 'message' => 'Note created']);
     }
 
-    public function createUserNote(Request $request){
-        $userNote = new NoteModel();
-        $userNote->title = $request->input('title');
-        $userNote->notes = $request->input('notes');
-        $userNote->id = auth()->id();
-        $userNote->save();
+    /**
+     * function to get all the notes of the user
+     */
+    public function getNotes(){
+        $notes = NotesModel::all();
+        return User::find($notes->user_id = auth()->id())->NotesModel;
     }
+
+
 }
