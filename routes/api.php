@@ -22,6 +22,8 @@ Route::post('/resetPassword', 'App\Http\Controllers\JwtAuthController@resetPassw
 
 Route::post('/addNotes','App\Http\Controllers\NoteController@createNote' );
 Route::get('/getNotes','App\Http\Controllers\NoteController@getNotes' );
+Route::post('/updateNote','App\Http\Controllers\NoteController@updateNote' );
+Route::post('/deleteNote','App\Http\Controllers\NoteController@deleteNote' );
 
 
 
