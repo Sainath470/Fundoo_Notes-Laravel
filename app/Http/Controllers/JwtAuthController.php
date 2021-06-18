@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\PasswordReset;
 use App\Notifications\ResetPasswordNotification;
+use Exception;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -49,7 +50,7 @@ class JwtAuthController extends Controller
     {
         return response()->json([
             'status' => 200,
-            'message' => 'succesfully login',
+            'message' => 'succesfully logged in',
             'access_token' => $token
         ]);
     }
@@ -77,7 +78,7 @@ class JwtAuthController extends Controller
 
         $userEmail = User::where('email', $email)->first();
         if ($userEmail) {
-            return response()->json(['status' => '422', 'message' => "This email already exists...."]);
+            return response()->json(['status' => 201, 'message' => "This email already exists...."]);
         }
 
         if ($req2->fails()) {
@@ -104,7 +105,11 @@ class JwtAuthController extends Controller
      */
     public function signout()
     {
+        try{
         auth()->logout();
+        }catch(Exception $e){
+            return response()->json(['status' => 201, 'message' => 'Token is invalid']);
+        }
         return response()->json(['status' => 200, 'message' => 'User logged out']);
     }
 

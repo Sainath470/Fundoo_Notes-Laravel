@@ -20,10 +20,10 @@ Route::post('/forgotPassword', 'App\Http\Controllers\JwtAuthController@forgotPas
 Route::post('/resetPassword', 'App\Http\Controllers\JwtAuthController@resetPassword');
 
 
-Route::post('/addNotes','App\Http\Controllers\NoteController@createNote' );
-Route::get('/getNotes','App\Http\Controllers\NoteController@getNotes' );
-Route::post('/updateNote','App\Http\Controllers\NoteController@updateNote' );
-Route::post('/deleteNote','App\Http\Controllers\NoteController@deleteNote' );
+Route::post('/addNotes','App\Http\Controllers\NoteController@createNote');
+Route::get('/getNotes','App\Http\Controllers\NoteController@getNotes');
+Route::post('/updateNote','App\Http\Controllers\NoteController@updateNote');
+Route::post('/deleteNote','App\Http\Controllers\NoteController@deleteNote');
 
 
 
