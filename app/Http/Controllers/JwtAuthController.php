@@ -74,6 +74,13 @@ class JwtAuthController extends Controller
             'password_confirmation' => 'required|same:password'
         ]);
 
+        $user = new User();
+        $user->firstName = $request->input('firstName');
+        $user->lastName = $request->input('lastName');
+        $user->email = $request->input('email');
+        $user->password = bcrypt($request->input('password'));
+
+
         $email = $request->get('email');
 
         $userEmail = User::where('email', $email)->first();
@@ -85,10 +92,7 @@ class JwtAuthController extends Controller
             return response()->json(['status' => 400, 'message' => "Password doesn't match"]);
         }
 
-        $user = User::create(array_merge(
-            $req->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
+        $user->save();
 
         return response()->json([
             'status' => 200,
