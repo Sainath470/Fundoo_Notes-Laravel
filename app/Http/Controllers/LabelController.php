@@ -57,4 +57,18 @@ class LabelController extends Controller
             return response()->json(['status' => 200, 'message' => "label updated!"]);
         }
     }
+
+    /**
+     * function to get all labels based on authorization
+     */
+    public function getLabels()
+    {
+        try {
+            $label = new Labels();
+            $table = $label->user_id = auth()->id();
+            return response()->json([User::find($table)->labelsModel]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 201, 'message' => "token is invalid"]);
+        }
+    }
 }
