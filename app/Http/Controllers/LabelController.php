@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Labels;
-use App\Models\LabelsNotes;
-use App\Models\NotesModel;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LabelController extends Controller
 {
@@ -21,7 +20,7 @@ class LabelController extends Controller
         $label = new Labels();
 
         $label->label_name = $request->input('label_name');
-        $label->user_id = Auth::user()->id;
+        $label->user_id = auth()->user()->id;
 
         $duplicateLabel = Labels::where('label_name', $label->label_name)->first();
 
@@ -30,6 +29,32 @@ class LabelController extends Controller
         } else {
             $label->save();
             return response()->json(['status' => 200,  'message' => "Label created"]);
+        }
+    }
+
+    /**
+     * function to update the label name
+     * 
+     * @param Request
+     * 
+     * @return success message or error message based on validation
+     */
+    public function updateLabel(Request $request)
+    {
+        $id = $request->input('id');
+
+        $label = new Labels();
+
+        try {
+            $label = Labels::findOrFail($id);
+        } catch (Exception $e) {
+            return response()->json(['status' => 201, 'message' => "label id not available"]);
+        }
+
+        if ($label->user_id == auth()->id()) {
+            $label->label_name = $request->input('label_name');
+            $label->save();
+            return response()->json(['status' => 200, 'message' => "label updated!"]);
         }
     }
 }

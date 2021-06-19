@@ -9,13 +9,9 @@ class NotesModel extends Model
 {
     use HasFactory;
     protected $table="notes";
-    protected $fillable=['title','description'];
+    protected $fillable = ['title','description'];
    
    public function user(){
        return $this->belongsTo(User::class);
-   }
-
-   public function labels(){
-       return $this->hasMany('App\Http\Models\LabelsNotes', 'note_id');
    }
 }

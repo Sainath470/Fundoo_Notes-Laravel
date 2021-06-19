@@ -36,6 +36,9 @@ Route::post('/deleteNote','App\Http\Controllers\NoteController@deleteNote');
  */
 Route::post('/makeLabel', 'App\Http\Controllers\LabelController@createLabel');
 Route::post('/noteToLabel', 'App\Http\Controllers\LabelController@addNoteToLabel');
+Route::post('/editLabelname', 'App\Http\Controllers\LabelController@updateLabel');
+Route::get('/getlabels', 'App\Http\Controllers\LabelController@getLabels');
+Route::post('/deleteLabel', 'App\Http\Controllers\LabelController@deleteLabel' );
 
 
 

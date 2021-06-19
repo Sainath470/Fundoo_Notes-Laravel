@@ -9,7 +9,10 @@ class Labels extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'label_name', 'user_id',
-    ];
+    protected $table = "labels";
+    protected $fillable = ['label_name'];
+
+    public function label(){
+        return $this->belongsTo(User::class);
+    }
 }
