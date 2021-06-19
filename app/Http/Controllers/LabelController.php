@@ -71,4 +71,29 @@ class LabelController extends Controller
             return response()->json(['status' => 201, 'message' => "token is invalid"]);
         }
     }
+
+    /**
+     * function to delete label 
+     * 
+     * @param Request 
+     * @param id that will be deleted
+     * 
+     * @return response 
+     */
+    public function deleteLabel(Request $request)
+    {
+        $id = $request->input('id');
+
+        try {
+            $label = Labels::findOrFail($id);
+        } catch (Exception $e) {
+            return response()->json(['status' => 422, 'message' => "Invalid note id"]);
+        }
+
+        if ($label->user_id == auth()->id()) {
+            if ($label->delete()) {
+                return response()->json(['status' => 201, 'messaged' => 'Note Deleted!']);
+            }
+        }
+    }
 }
