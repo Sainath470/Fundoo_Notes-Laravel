@@ -10,9 +10,6 @@ class Labels extends Model
     use HasFactory;
 
     protected $table = "labels";
-    protected $fillable = ['label_name'];
+    protected $fillable = ['user_id', 'label_name'];
 
-    public function label(){
-        return $this->belongsTo(User::class);
-    }
 }

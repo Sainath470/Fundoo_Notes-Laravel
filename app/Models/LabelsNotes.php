@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LabelsNotes extends Model
 {
-    use HasFactory;
-
+    protected $table = "labels_notes";
+    
     protected $fillable = [
         'user_id', 'note_id', 'label_id'
     ];
 
-    protected $with = ['labelName'];
+    protected $with = ['label_name'];
 
     public function labelName(){
-        return $this->belongsTo('App\Http\Models\Labels' , 'label_id');
+        return $this->belongsTo('App\Models\Labels', 'label_id');
     }
 }

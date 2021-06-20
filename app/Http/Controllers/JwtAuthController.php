@@ -32,11 +32,11 @@ class JwtAuthController extends Controller
         $user = User::where('email', $email)->first();
 
         if (!$user) {
-            return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"]);
+            return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"], 401);
         }
 
         if (!$token = auth()->attempt($req->validated())) {
-            return response()->json(['status' => 401, 'message' => 'Unauthorized']);
+            return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
         }
 
         return $this->generateToken($token);
@@ -85,11 +85,11 @@ class JwtAuthController extends Controller
 
         $userEmail = User::where('email', $email)->first();
         if ($userEmail) {
-            return response()->json(['status' => 201, 'message' => "This email already exists...."]);
+            return response()->json(['status' => 201, 'message' => "This email already exists...."], 201);
         }
 
         if ($req2->fails()) {
-            return response()->json(['status' => 400, 'message' => "Password doesn't match"]);
+            return response()->json(['status' => 400, 'message' => "Password doesn't match"], 400);
         }
 
         $user->save();
@@ -112,9 +112,9 @@ class JwtAuthController extends Controller
         try{
         auth()->logout();
         }catch(Exception $e){
-            return response()->json(['status' => 201, 'message' => 'Token is invalid']);
+            return response()->json(['status' => 201, 'message' => 'Token is invalid'], 201);
         }
-        return response()->json(['status' => 200, 'message' => 'User logged out']);
+        return response()->json(['status' => 200, 'message' => 'User logged out'], 200);
     }
 
     /**
@@ -145,7 +145,7 @@ class JwtAuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!$user) {
-            return response()->json(['status' => 401, 'message' => "we can't find a user with that email address."]);
+            return response()->json(['status' => 401, 'message' => "we can't find a user with that email address."], 401);
         }
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
@@ -185,12 +185,12 @@ class JwtAuthController extends Controller
         ])->first();
 
         if (!$passwordReset) {
-            return response()->json(['status' => 201, 'message' => 'This token is invalid']);
+            return response()->json(['status' => 201, 'message' => 'This token is invalid'], 201);
         }
         $user = User::where('email', $passwordReset->email)->first();
 
         if (!$user) {
-            return response()->json(['status' => 200, 'message' => "we can't find the user with that e-mail address"]);
+            return response()->json(['status' => 201, 'message' => "we can't find the user with that e-mail address"],201);
         } else {
             $user->password = bcrypt($request->new_password);
             $user->save();

@@ -24,7 +24,7 @@ class NoteController extends Controller
         $note->user_id = Auth::user()->id;
         $note->save();
         }catch(Exception $e){
-            return response()->json(['status' => 200, 'message' => 'Invalid authorization token is invalid']);
+            return response()->json(['status' => 404, 'message' => 'Invalid authorization token is invalid'], 404);
         }
         return response()->json(['status' => 200, 'message' => 'Note created']);
     }
@@ -40,7 +40,7 @@ class NoteController extends Controller
         $notes = NotesModel::all();
         return User::find($notes->user_id = auth()->id())->NotesModel;
         }catch(Exception $e){
-            return response()->json(['status' => 201, 'message' => 'Invalid authorization token is invalid!']);
+            return response()->json(['status' => 201, 'message' => 'Invalid authorization token is invalid!'], 201);
         }
     }
 
