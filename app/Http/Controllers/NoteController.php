@@ -57,7 +57,7 @@ class NoteController extends Controller
         try{
             $note = NotesModel::findOrFail($id);
         }catch(Exception $e){
-            return response()->json(['status' => 422, 'message' => "Notes are not available with that id"]);
+            return response()->json(['status' => 422, 'message' => "Notes are not available with that id"], 422);
         }
 
         if ($note->user_id == auth()->id()) {
@@ -80,12 +80,12 @@ class NoteController extends Controller
         try{
             $note = NotesModel::findOrFail($id);
         }catch(Exception $e){
-            return response()->json(['status' => 422, 'message' => "Invalid note id"]);
+            return response()->json(['status' => 422, 'message' => "Invalid note id"], 422);
         }  
 
         if ($note->user_id == auth()->id()) {
             if ($note->delete()) {
-                return response()->json(['status' => 201, 'messaged' => 'Note Deleted!']);
+                return response()->json(['status' => 200, 'message' => 'Note Deleted!']);
             }
         } 
     }
