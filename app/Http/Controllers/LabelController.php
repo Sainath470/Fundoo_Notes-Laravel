@@ -30,7 +30,7 @@ class LabelController extends Controller
         $label->save();
         return response()->json(['status' => 200,  'message' => "Label created"]);
         }catch(Exception $e){
-            return response()->json(['status' => 201,  'message' => "duplicate label name not allowed"]);
+            return response()->json(['status' => 201,  'message' => "duplicate label name not allowed"], 201);
         } 
     }
 
@@ -50,7 +50,7 @@ class LabelController extends Controller
         try {
             $label = Labels::findOrFail($id);
         } catch (Exception $e) {
-            return response()->json(['status' => 201, 'message' => "label id not available"]);
+            return response()->json(['status' => 201, 'message' => "label id not available"], 201);
         }
 
         if ($label->user_id == auth()->id()) {
@@ -70,7 +70,7 @@ class LabelController extends Controller
             $table = $label->user_id = auth()->id();
             return response()->json([User::find($table)->labelsModel]);
         } catch (Exception $e) {
-            return response()->json(['status' => 201, 'message' => "token is invalid"]);
+            return response()->json(['status' => 201, 'message' => "token is invalid"], 201);
         }
     }
 
@@ -89,7 +89,7 @@ class LabelController extends Controller
         try {
             $label = Labels::findOrFail($id);
         } catch (Exception $e) {
-            return response()->json(['status' => 422, 'message' => "Invalid label id"]);
+            return response()->json(['status' => 422, 'message' => "Invalid label id"], 422);
         }
 
         if ($label->user_id == auth()->id()) {
