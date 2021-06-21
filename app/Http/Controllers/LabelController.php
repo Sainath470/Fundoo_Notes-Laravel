@@ -24,14 +24,14 @@ class LabelController extends Controller
     {
         $label = new Labels();
 
-        try{
-        $label->label_name = $request->input('label_name');
-        $label->user_id = auth()->user()->id;
-        $label->save();
-        return response()->json(['status' => 200,  'message' => "Label created"]);
-        }catch(Exception $e){
+        try {
+            $label->label_name = $request->input('label_name');
+            $label->user_id = auth()->user()->id;
+            $label->save();
+            return response()->json(['status' => 200,  'message' => "Label created"]);
+        } catch (Exception $e) {
             return response()->json(['status' => 201,  'message' => "duplicate label name not allowed"], 201);
-        } 
+        }
     }
 
     /**
@@ -104,59 +104,25 @@ class LabelController extends Controller
      */
     public function addNoteToLabel(Request $request)
     {
+        $labelsNotes = new LabelsNotes();
 
-        $labelNotes = new LabelsNotes();
-        
-        $labelNotes->user_id = auth()->id();
-        $labelNotes->note_id = $request->input('note_id');
-        $labelNotes->label_id = $request->input('label_id');
+        $id = auth()->id();
 
+        $labelsNotes->user_id = User::where('id', $id)->value('id');
+        $labelsNotes->label_id = Labels::where('id', $request->input('label_id'))->value('id');
+        $labelsNotes->note_id = NotesModel::where('id', $request->input('note_id'))->value('id');
 
-        $labelNotesUser = NotesModel::where('user_id' ,  $labelNotes->user_id)->first();
+        $userInNotesTable = NotesModel::where('id', $request->input('note_id'))->value('user_id');
+        $userInLabelsTable = Labels::where('id', $request->input('label_id'))->value('user_id');
 
-        // $note = NotesModel::where('id', $request->input('note_id'))->first();
-        
-        return response()->json([$labelNotesUser]);
-
-        // if($labelNotes->user_id == auth()->id()){
-            
-        // }
-
-      
-
-        // //if validator fails means that the label is already added to the note
-        // if ($validator->fails()) {
-        //     $err = $validator->errors();
-        //     //the it returns the error in the response 
-        //     return response()->json(['message' => $err], 210);
-        // }
-        //  //or map the label to the note 
-        //  LabelsNotes::create($labelNotes);
-        
-        // //fetching the newly added note from the database
-         
-        
-        $labelNotes->save();
-        // return response()->json(['status' => 200, 'message' => 'note added to label successfully!']);
-       
-
-
-    }
-
-    /**
-     * delete note from the label
-     */
-    public function deleteNoteFromLabel(Request $request){
-        $labelNotes = new LabelsNotes();
-
-        $labelNotes->label_id = $request->get('label_id');
-        $labelNotes->note_id = $request->get('note_id');
-
-        if($labelNotes->user_id == auth()->id()){
-            $labelNotes->note_id->delete();
-            return response()->json(['status' => 200, 'message' => 'Note deleted from the label succesfully!']);
-        }else{
-            return response()->json(['status' => 201, 'message' => 'invalid credentials']);
+        if ($labelsNotes->user_id != $userInNotesTable) {
+            return response()->json(['status' => 201, 'message' => 'note not available for this user!'], 201);
         }
+        if ($labelsNotes->user_id != $userInLabelsTable) {
+            return response()->json(['status' => 201, 'message' => 'Label not available for this user!'], 201);
+        }
+
+        $labelsNotes->save();
+        return response()->json(['status' => 200, 'message' => 'note added to label successfully!']);
     }
 }

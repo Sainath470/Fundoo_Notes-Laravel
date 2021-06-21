@@ -198,4 +198,9 @@ class JwtAuthController extends Controller
             return response()->json(['status' => 200, 'message' => 'Password reset successfull!']);
         }
     }
+
+    public function UserStatus()
+     {
+         dd('You are active');
+     }
 }

@@ -11,11 +11,11 @@ class UserControllerTest extends TestCase
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
         ])->json('POST', '/api/register', [
-            "firstName" => "mark",
-            "lastName" => "bell",
-            "email" => "samuel@gmail.com",
-            "password" => "mark@123",
-            "password_confirmation" => "mark@123"
+            "firstName" => "krish",
+            "lastName" => "sai",
+            "email" => "Krish@gmail.com",
+            "password" => "Krishna@123",
+            "password_confirmation" => "Krishna@123"
         ]);
         $response->assertStatus(200)->assertJson(['message' => 'User succesfully registered!']);
     }

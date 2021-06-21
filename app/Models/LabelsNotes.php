@@ -9,7 +9,7 @@ class LabelsNotes extends Model
     protected $table = "labels_notes";
     
     protected $fillable = [
-        'user_id', 'note_id', 'label_id'
+         'note_id', 'label_id'
     ];
 
     protected $with = ['label_name'];
