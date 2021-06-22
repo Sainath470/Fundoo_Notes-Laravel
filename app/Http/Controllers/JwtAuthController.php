@@ -13,8 +13,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class JwtAuthController extends Controller
 {
-   
-       /**
+
+    /**
      * @OA\Post(
      ** path="/api/auth/login",
      *   tags={"Login"},
@@ -100,7 +100,7 @@ class JwtAuthController extends Controller
         ]);
     }
 
-      /**
+    /**
      * @OA\Post(
      ** path="/api/auth/register",
      *   tags={"Register"},
@@ -244,7 +244,7 @@ class JwtAuthController extends Controller
         return response()->json(auth()->user());
     }
 
-     /**
+    /**
      * @OA\Post(
      ** path="/api/auth/forgotPassword",
      *   tags={"Forgot Password"},
@@ -309,7 +309,7 @@ class JwtAuthController extends Controller
         return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
     }
 
-     /**
+    /**
      * @OA\Post(
      ** path="/api/auth/resetPassword",
      *   tags={"Reset Password"},
