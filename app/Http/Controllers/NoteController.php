@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Labels;
+use App\Models\LabelsNotes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\NotesModel;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class NoteController extends Controller
 {
@@ -17,13 +20,13 @@ class NoteController extends Controller
      */
     public function createNote(Request $request)
     {
-        try{
-        $note = new NotesModel;
-        $note->title = $request->input('title');
-        $note->description = $request->input('description');
-        $note->user_id = Auth::user()->id;
-        $note->save();
-        }catch(Exception $e){
+        try {
+            $note = new NotesModel;
+            $note->title = $request->input('title');
+            $note->description = $request->input('description');
+            $note->user_id = Auth::user()->id;
+            $note->save();
+        } catch (Exception $e) {
             return response()->json(['status' => 404, 'message' => 'Invalid authorization token is invalid'], 404);
         }
         return response()->json(['status' => 200, 'message' => 'Note created']);
@@ -36,12 +39,13 @@ class NoteController extends Controller
      */
     public function getNotes()
     {
-        try{
-        $notes = NotesModel::all();
-        return User::find($notes->user_id = auth()->id())->NotesModel;
-        }catch(Exception $e){
-            return response()->json(['status' => 201, 'message' => 'Invalid authorization token is invalid!'], 201);
+        $notes = LabelsNotes::all();
+        $notes->user_id = auth()->id();
+
+        if ($notes->user_id != auth()->id()) {
+            return response()->json(['status' => 201, 'message' => 'No notes and labels are available!'], 201);
         }
+        return  DB::table('labels_notes')->select('note_id', 'label_id')->where('user_id', $notes->user_id)->get();
     }
 
     /**
@@ -54,9 +58,9 @@ class NoteController extends Controller
     {
         $id = $request->input('id');
 
-        try{
+        try {
             $note = NotesModel::findOrFail($id);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json(['status' => 422, 'message' => "Notes are not available with that id"], 422);
         }
 
@@ -77,16 +81,16 @@ class NoteController extends Controller
     {
         $id = $request->input('id');
 
-        try{
+        try {
             $note = NotesModel::findOrFail($id);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json(['status' => 422, 'message' => "Invalid note id"], 422);
-        }  
+        }
 
         if ($note->user_id == auth()->id()) {
             if ($note->delete()) {
                 return response()->json(['status' => 200, 'message' => 'Note Deleted!']);
             }
-        } 
+        }
     }
 }

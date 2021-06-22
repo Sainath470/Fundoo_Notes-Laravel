@@ -101,6 +101,11 @@ class LabelController extends Controller
 
     /**
      * function to add note to label
+     * @param Request
+     * @param note_id note to be added
+     * @param label_id label to be added
+     * 
+     * @return response
      */
     public function addNoteToLabel(Request $request)
     {
@@ -124,5 +129,39 @@ class LabelController extends Controller
 
         $labelsNotes->save();
         return response()->json(['status' => 200, 'message' => 'note added to label successfully!']);
+    }
+
+    /**
+     * function to delete the note from the label
+     * @param Request
+     * @param note_id
+     * 
+     */
+    public function deleteNoteFromLabel(Request $request)
+    {
+        $labelsNotes = new LabelsNotes();
+
+        $id = auth()->id();
+
+
+        $labelsNotes->user_id = User::where('id', $id)->value('id');
+        $labelsNotes->label_id = Labels::where('id', $request->input('label_id'))->value('id');
+        $labelsNotes->note_id = NotesModel::where('id', $request->input('note_id'))->value('id');
+
+        $userInNotesTable = NotesModel::where('id', $request->input('note_id'))->value('user_id');
+        $userInLabelsTable = Labels::where('id', $request->input('label_id'))->value('user_id');
+
+        if ($labelsNotes->user_id != $userInNotesTable) {
+            return response()->json(['status' => 201, 'message' => 'note not available for this user!'], 201);
+        }
+        if ($labelsNotes->user_id != $userInLabelsTable) {
+            return response()->json(['status' => 201, 'message' => 'Label not available for this user!'], 201);
+        }
+
+        $labelsNotesId = LabelsNotes::where('note_id',  $labelsNotes->note_id )->where('label_id', $labelsNotes->label_id)->first();
+
+            if ($labelsNotesId->delete()) {
+                return response()->json(['status' => 200, 'message' => 'note deleted from label successfully!']);
+            }
     }
 }

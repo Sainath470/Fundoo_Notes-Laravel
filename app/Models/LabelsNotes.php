@@ -12,9 +12,9 @@ class LabelsNotes extends Model
          'note_id', 'label_id'
     ];
 
-    protected $with = ['label_name'];
+    // protected $with = ['label_name'];
 
     public function labelName(){
-        return $this->belongsTo('App\Models\Labels', 'label_id');
+        return $this->belongsTo(Labels::class);
     }
 }

@@ -24,7 +24,8 @@ class JwtAuthController extends Controller
     {
         $req = FacadesValidator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required|min:5',
+            'password' => 'required|
+            min:5',
         ]);
 
         $email = $request->get('email');
@@ -79,8 +80,6 @@ class JwtAuthController extends Controller
         $user->lastName = $request->input('lastName');
         $user->email = $request->input('email');
         $user->password = bcrypt($request->input('password'));
-
-
         $email = $request->get('email');
 
         $userEmail = User::where('email', $email)->first();
@@ -91,7 +90,6 @@ class JwtAuthController extends Controller
         if ($req2->fails()) {
             return response()->json(['status' => 400, 'message' => "Password doesn't match"], 400);
         }
-
         $user->save();
 
         return response()->json([
@@ -109,9 +107,9 @@ class JwtAuthController extends Controller
      */
     public function signout()
     {
-        try{
-        auth()->logout();
-        }catch(Exception $e){
+        try {
+            auth()->logout();
+        } catch (Exception $e) {
             return response()->json(['status' => 201, 'message' => 'Token is invalid'], 201);
         }
         return response()->json(['status' => 200, 'message' => 'User logged out'], 200);
@@ -141,7 +139,7 @@ class JwtAuthController extends Controller
      * or
      * @return link or error message
      */
-    public function forgotpassword(Request $request)
+    public function forgotPassword(Request $request)
     {
         $user = User::where('email', $request->email)->first();
         if (!$user) {
@@ -190,7 +188,7 @@ class JwtAuthController extends Controller
         $user = User::where('email', $passwordReset->email)->first();
 
         if (!$user) {
-            return response()->json(['status' => 201, 'message' => "we can't find the user with that e-mail address"],201);
+            return response()->json(['status' => 201, 'message' => "we can't find the user with that e-mail address"], 201);
         } else {
             $user->password = bcrypt($request->new_password);
             $user->save();
@@ -198,9 +196,4 @@ class JwtAuthController extends Controller
             return response()->json(['status' => 200, 'message' => 'Password reset successfull!']);
         }
     }
-
-    public function UserStatus()
-     {
-         dd('You are active');
-     }
 }

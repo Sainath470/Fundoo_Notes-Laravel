@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\JwtAuthController;
+use App\Http\Controllers\NoteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,12 +18,17 @@ use Illuminate\Support\Facades\Route;
 /**
  * routes for JWTAuth controller
  */
-Route::post('/register', 'App\Http\Controllers\JwtAuthController@register');
-Route::post('/login', 'App\Http\Controllers\JwtAuthController@login');
-Route::post('/signout', 'App\Http\Controllers\JwtAuthController@signout');
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+   Route::post('login', [JwtAuthController::class, 'login']);
+    Route::post('register', [JwtAuthController::class, 'register']);
+Route::post('/signout', [JwtAuthController::class, 'signout']);
 Route::post('/forgotPassword', 'App\Http\Controllers\JwtAuthController@forgotPassword');
 Route::post('/resetPassword', 'App\Http\Controllers\JwtAuthController@resetPassword');
-
+});
 
 /**
  * routes for Note controller
@@ -41,5 +48,4 @@ Route::get('/getlabels', 'App\Http\Controllers\LabelController@getLabels');
 Route::post('/deleteLabel', 'App\Http\Controllers\LabelController@deleteLabel');
 Route::post('/addnotetolabel', 'App\Http\Controllers\LabelController@addNoteToLabel');
 Route::post('/deletenotefromlabel', 'App\Http\Controllers\LabelController@deleteNoteFromLabel');
-
 

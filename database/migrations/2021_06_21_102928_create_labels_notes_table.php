@@ -19,13 +19,13 @@ class CreateLabelsNotesTable extends Migration
             $table->unsignedInteger('note_id');
             $table->unsignedInteger('label_id');
         
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('note_id')->references('id')->on('notes');
-            $table->foreign('label_id')->references('id')->on('labels');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('note_id')->references('id')->on('notes')->onUpdate('cascade');
+            $table->foreign('label_id')->references('id')->on('labels')->onUpdate('cascade');
             $table->timestamps();
         });
     }
-    
+
 
     /**
      * Reverse the migrations.
