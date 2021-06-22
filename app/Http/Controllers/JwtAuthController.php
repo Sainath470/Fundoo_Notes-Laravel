@@ -29,17 +29,14 @@ class JwtAuthController extends Controller
         ]);
 
         $email = $request->get('email');
-
         $user = User::where('email', $email)->first();
 
         if (!$user) {
             return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"], 401);
         }
-
         if (!$token = auth()->attempt($req->validated())) {
             return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
         }
-
         return $this->generateToken($token);
     }
 
@@ -86,18 +83,15 @@ class JwtAuthController extends Controller
         if ($userEmail) {
             return response()->json(['status' => 201, 'message' => "This email already exists...."], 201);
         }
-
         if ($req2->fails()) {
             return response()->json(['status' => 400, 'message' => "Password doesn't match"], 400);
         }
         $user->save();
-
         return response()->json([
             'status' => 200,
             'message' => 'User succesfully registered!'
         ]);
     }
-
 
     /**
      * Signout function is used to log the user out of application
@@ -131,7 +125,6 @@ class JwtAuthController extends Controller
     {
         return response()->json(auth()->user());
     }
-
 
     /**
      * This function is used to send the forgot password link to the respective email
@@ -177,7 +170,6 @@ class JwtAuthController extends Controller
         if ($validate->fails()) {
             return response()->json(['status' => 201, 'message' => "Password doesn't match"]);
         }
-
         $passwordReset = PasswordReset::where([
             ['token', $request->bearerToken()]
         ])->first();

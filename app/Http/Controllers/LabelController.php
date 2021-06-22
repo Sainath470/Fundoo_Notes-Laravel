@@ -7,10 +7,8 @@ use App\Models\LabelsNotes;
 use App\Models\NotesModel;
 use App\Models\User;
 use Exception;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator as FacadesValidator;
-
+use Illuminate\Support\Facades\DB;
 
 class LabelController extends Controller
 {
@@ -46,13 +44,11 @@ class LabelController extends Controller
         $id = $request->input('id');
 
         $label = new Labels();
-
         try {
             $label = Labels::findOrFail($id);
         } catch (Exception $e) {
             return response()->json(['status' => 201, 'message' => "label id not available"], 201);
         }
-
         if ($label->user_id == auth()->id()) {
             $label->label_name = $request->input('label_name');
             $label->save();
@@ -91,7 +87,6 @@ class LabelController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 422, 'message' => "Invalid label id"], 422);
         }
-
         if ($label->user_id == auth()->id()) {
             if ($label->delete()) {
                 return response()->json(['status' => 200, 'messaged' => 'label Deleted!']);
@@ -143,7 +138,6 @@ class LabelController extends Controller
 
         $id = auth()->id();
 
-
         $labelsNotes->user_id = User::where('id', $id)->value('id');
         $labelsNotes->label_id = Labels::where('id', $request->input('label_id'))->value('id');
         $labelsNotes->note_id = NotesModel::where('id', $request->input('note_id'))->value('id');
@@ -157,11 +151,34 @@ class LabelController extends Controller
         if ($labelsNotes->user_id != $userInLabelsTable) {
             return response()->json(['status' => 201, 'message' => 'Label not available for this user!'], 201);
         }
+        $labelsNotesId = LabelsNotes::where('note_id',  $labelsNotes->note_id)->where('label_id', $labelsNotes->label_id)->first();
 
-        $labelsNotesId = LabelsNotes::where('note_id',  $labelsNotes->note_id )->where('label_id', $labelsNotes->label_id)->first();
+        if ($labelsNotesId->delete()) {
+            return response()->json(['status' => 200, 'message' => 'note deleted from label successfully!']);
+        }
+    }
+    
+    /**
+     * function to get all the notes having label 
+     * 
+     * @return notes with label name
+     */
+    public function getAllNotesInLabels()
+    {
+        $notes = LabelsNotes::all();
+        $notes->user_id = auth()->id();
 
-            if ($labelsNotesId->delete()) {
-                return response()->json(['status' => 200, 'message' => 'note deleted from label successfully!']);
-            }
+        $user = User::where('id', $notes->user_id)->value('id');
+        if ($notes->user_id == $user) {
+            $data = DB::table('labels_notes')
+                ->join('labels', 'labels_notes.label_id', '=', 'labels.id')
+                ->join('notes', 'labels_notes.note_id', '=', 'notes.id')
+                ->select('notes.title', 'notes.description', 'labels.label_name')
+                ->where('labels_notes.user_id', $notes->user_id)
+                ->get();
+            return response()->json([$data]);
+        } else {
+            return response()->json(['status' => 201, 'message' => 'Token is invalid!']);
+        }
     }
 }

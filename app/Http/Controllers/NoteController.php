@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Labels;
-use App\Models\LabelsNotes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -39,13 +37,13 @@ class NoteController extends Controller
      */
     public function getNotes()
     {
-        $notes = LabelsNotes::all();
-        $notes->user_id = auth()->id();
-
-        if ($notes->user_id != auth()->id()) {
-            return response()->json(['status' => 201, 'message' => 'No notes and labels are available!'], 201);
+        try {
+            $notes = new NotesModel();
+            $notes->user_id = auth()->id();
+            return DB::table('notes')->select('id', 'title', 'description')->where('user_id', $notes->user_id)->get();
+        } catch (Exception $e) {
+            return response()->json(['status' => 201, 'message' => 'Invalid token']);
         }
-        return  DB::table('labels_notes')->select('note_id', 'label_id')->where('user_id', $notes->user_id)->get();
     }
 
     /**
@@ -57,13 +55,11 @@ class NoteController extends Controller
     public function updateNote(Request $request)
     {
         $id = $request->input('id');
-
         try {
             $note = NotesModel::findOrFail($id);
         } catch (Exception $e) {
             return response()->json(['status' => 422, 'message' => "Notes are not available with that id"], 422);
         }
-
         if ($note->user_id == auth()->id()) {
             $note->title = $request->input('title');
             $note->description = $request->input('description');
@@ -80,13 +76,11 @@ class NoteController extends Controller
     public function deleteNote(Request $request)
     {
         $id = $request->input('id');
-
         try {
             $note = NotesModel::findOrFail($id);
         } catch (Exception $e) {
             return response()->json(['status' => 422, 'message' => "Invalid note id"], 422);
         }
-
         if ($note->user_id == auth()->id()) {
             if ($note->delete()) {
                 return response()->json(['status' => 200, 'message' => 'Note Deleted!']);

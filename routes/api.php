@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\JwtAuthController;
+use App\Http\Controllers\LabelController;
 use App\Http\Controllers\NoteController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,29 +24,29 @@ Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
-   Route::post('login', [JwtAuthController::class, 'login']);
+    Route::post('login', [JwtAuthController::class, 'login']);
     Route::post('register', [JwtAuthController::class, 'register']);
-Route::post('/signout', [JwtAuthController::class, 'signout']);
-Route::post('/forgotPassword', 'App\Http\Controllers\JwtAuthController@forgotPassword');
-Route::post('/resetPassword', 'App\Http\Controllers\JwtAuthController@resetPassword');
-});
+    Route::post('signout', [JwtAuthController::class, 'signout']);
+    Route::post('forgotPassword', [JwtAuthController::class, 'forgotPassword']);
+    Route::post('resetPassword', [JwtAuthController::class, 'resetPassword']);
+
 
 /**
  * routes for Note controller
  */
-Route::post('/addNotes','App\Http\Controllers\NoteController@createNote');
-Route::get('/getNotes','App\Http\Controllers\NoteController@getNotes');
-Route::post('/updateNote','App\Http\Controllers\NoteController@updateNote');
-Route::post('/deleteNote','App\Http\Controllers\NoteController@deleteNote');
+    Route::post('addNotes',[NoteController::class, 'createNote']);
+    Route::get('getNotes', [NoteController::class, 'getNotes']);
+    Route::post('updateNote',[NoteController::class, 'updateNote']);
+    Route::post('deleteNote', [NoteController::class, 'deleteNote']);
 
 /**
  * routes for Label controller
  */
-Route::post('/makeLabel', 'App\Http\Controllers\LabelController@createLabel');
-Route::post('/noteToLabel', 'App\Http\Controllers\LabelController@addNoteToLabel');
-Route::post('/editLabelname', 'App\Http\Controllers\LabelController@updateLabel');
-Route::get('/getlabels', 'App\Http\Controllers\LabelController@getLabels');
-Route::post('/deleteLabel', 'App\Http\Controllers\LabelController@deleteLabel');
-Route::post('/addnotetolabel', 'App\Http\Controllers\LabelController@addNoteToLabel');
-Route::post('/deletenotefromlabel', 'App\Http\Controllers\LabelController@deleteNoteFromLabel');
-
+    Route::post('makeLabel', [LabelController::class, 'createLabel']);
+    Route::post('noteToLabel', [LabelController::class, 'addNoteToLabel']);
+    Route::post('editLabelname', [LabelController::class, 'updateLabel']);
+    Route::post('deleteLabel', [LabelController::class, 'deleteLabel']);
+    Route::post('addnotetolabel', [LabelController::class, ' addNoteToLabel']);
+    Route::post('deletenotefromlabel', [LabelController::class,'deleteNoteFromLabel']);
+    Route::get('getAllNotesLabels', [LabelController::class,'getAllNotesInLabels']);
+});
