@@ -173,10 +173,10 @@ class LabelController extends Controller
             $data = DB::table('labels_notes')
                 ->join('labels', 'labels_notes.label_id', '=', 'labels.id')
                 ->join('notes', 'labels_notes.note_id', '=', 'notes.id')
-                ->select('notes.title', 'notes.description', 'labels.label_name')
+                ->select('notes.id as note_id','notes.title', 'notes.description', 'labels.label_name', 'labels.id as label_id')
                 ->where('labels_notes.user_id', $notes->user_id)
                 ->get();
-            return response()->json([$data]);
+            return $data;
         } else {
             return response()->json(['status' => 201, 'message' => 'Token is invalid!']);
         }

@@ -10,15 +10,62 @@ use Exception;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+
 class JwtAuthController extends Controller
 {
+   
+       /**
+     * @OA\Post(
+     ** path="/api/auth/login",
+     *   tags={"Login"},
+     *   summary="Login",
+     *   operationId="login",
+     *
+     *   @OA\Parameter(
+     *      name="email",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Parameter(
+     *      name="password",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *          type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=200,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
     /**
-     * login() function validates the credentials with the database if the credentials are correct and present in db
-     * it will generate the token
-     * along with status code and message. Else return error validation message
-     * @param fails() Determine if the data fails the validation rules
-     * @param make() requests data and returns validator
-     * @param attempt checks the credentials and returns bool value
+     * login api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function login(Request $request)
     {
@@ -35,7 +82,7 @@ class JwtAuthController extends Controller
             return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"], 401);
         }
         if (!$token = auth()->attempt($req->validated())) {
-            return response()->json(['status' => 401, 'message' => 'Unauthorized'], 401);
+            return response()->json(['status' => 401, 'message' => 'Unauthenticated'], 401);
         }
         return $this->generateToken($token);
     }
@@ -53,11 +100,82 @@ class JwtAuthController extends Controller
         ]);
     }
 
-    /**
-     * register function validates the credentials and if correct it will store in the database, if not gives error message
-     * User is the model in which the database is given
+      /**
+     * @OA\Post(
+     ** path="/api/auth/register",
+     *   tags={"Register"},
+     *   summary="Register",
+     *   operationId="register",
      *
-     * @return \Illuminate\Http\JsonResponse
+     *  @OA\Parameter(
+     *      name="First Name",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="Last Name",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="email",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Parameter(
+     *      name="password",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *      @OA\Parameter(
+     *      name="password_confirmation",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
     {
@@ -88,7 +206,7 @@ class JwtAuthController extends Controller
         }
         $user->save();
         return response()->json([
-            'status' => 200,
+            'status' => 201,
             'message' => 'User succesfully registered!'
         ]);
     }
@@ -126,11 +244,50 @@ class JwtAuthController extends Controller
         return response()->json(auth()->user());
     }
 
+     /**
+     * @OA\Post(
+     ** path="/api/auth/forgotPassword",
+     *   tags={"Forgot Password"},
+     *   summary="Forgot Password",
+     *   operationId="forgotPassword",
+     * 
+     *  @OA\Parameter(
+     *      name="email",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
     /**
-     * This function is used to send the forgot password link to the respective email
-     * @param [string] email
-     * or
-     * @return link or error message
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function forgotPassword(Request $request)
     {
@@ -152,13 +309,82 @@ class JwtAuthController extends Controller
         return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
     }
 
+     /**
+     * @OA\Post(
+     ** path="/api/auth/resetPassword",
+     *   tags={"Reset Password"},
+     *   summary="Reset Password",
+     *   operationId="resetPassword",
+     *
+     *  @OA\Parameter(
+     *      name="First Name",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="Last Name",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="email",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Parameter(
+     *      name="password",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *      @OA\Parameter(
+     *      name="password_confirmation",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
     /**
-     * function to reset the password to the respective user id based on email and bearer token
-     * @param [new_password] takes new password 
-     * @param [confirm_password] takes password same as new_password
-     * @param bearerToken() token passed through authorization header
-     * 
-     * @return success message or error based on validation
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
      */
     public function resetPassword(Request $request)
     {

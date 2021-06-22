@@ -50,3 +50,4 @@ Route::group([
     Route::post('deletenotefromlabel', [LabelController::class,'deleteNoteFromLabel']);
     Route::get('getAllNotesLabels', [LabelController::class,'getAllNotesInLabels']);
 });
+
