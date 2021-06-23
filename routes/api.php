@@ -3,6 +3,7 @@
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\NoteController;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,8 +47,11 @@ Route::group([
     Route::post('noteToLabel', [LabelController::class, 'addNoteToLabel']);
     Route::post('editLabelname', [LabelController::class, 'updateLabel']);
     Route::post('deleteLabel', [LabelController::class, 'deleteLabel']);
+    Route::post('getLabels', [LabelController::class, 'getLabels']);
     Route::post('addnotetolabel', [LabelController::class, ' addNoteToLabel']);
     Route::post('deletenotefromlabel', [LabelController::class,'deleteNoteFromLabel']);
     Route::get('getAllNotesLabels', [LabelController::class,'getAllNotesInLabels']);
 });
+
+
 

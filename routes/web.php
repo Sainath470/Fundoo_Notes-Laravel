@@ -17,9 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware([CheckStatus::class])->group(function(){
 
-     Route::post('/UserStatus', 'App\Http\Controllers\JwtAuthController@UserStatus');
-});
-
-Route::resource('projects', 'App\Http\Controllers\ProjectsController');

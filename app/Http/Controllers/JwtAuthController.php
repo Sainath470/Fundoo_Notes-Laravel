@@ -7,9 +7,20 @@ use App\Models\User;
 use App\Models\PasswordReset;
 use App\Notifications\ResetPasswordNotification;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/** 
+ * 
+ *
+ * 
+ * @OA\SecurityScheme(
+ *      securityScheme="bearer_token",
+ *      type="http",
+ *      scheme="bearer"
+ * )
+ */
 
 class JwtAuthController extends Controller
 {
@@ -84,6 +95,7 @@ class JwtAuthController extends Controller
         if (!$token = auth()->attempt($req->validated())) {
             return response()->json(['status' => 401, 'message' => 'Unauthenticated'], 401);
         }
+        Log::channel('mydailylogs')->info('Login request:'.json_encode($request->all()));
         return $this->generateToken($token);
     }
 
@@ -108,7 +120,7 @@ class JwtAuthController extends Controller
      *   operationId="register",
      *
      *  @OA\Parameter(
-     *      name="First Name",
+     *      name="firstName",
      *      in="query",
      *      required=true,
      *      @OA\Schema(
@@ -116,7 +128,7 @@ class JwtAuthController extends Controller
      *      )
      *   ),
      *  @OA\Parameter(
-     *      name="Last Name",
+     *      name="lastName",
      *      in="query",
      *      required=true,
      *      @OA\Schema(
@@ -205,6 +217,7 @@ class JwtAuthController extends Controller
             return response()->json(['status' => 400, 'message' => "Password doesn't match"], 400);
         }
         $user->save();
+        Log::channel('mydailylogs')->info('Register request:'.json_encode($request->all()));
         return response()->json([
             'status' => 201,
             'message' => 'User succesfully registered!'
@@ -313,41 +326,9 @@ class JwtAuthController extends Controller
      * @OA\Post(
      ** path="/api/auth/resetPassword",
      *   tags={"Reset Password"},
-     *   summary="Reset Password",
+     *   summary ="Reset Password",
      *   operationId="resetPassword",
      *
-     *  @OA\Parameter(
-     *      name="First Name",
-     *      in="query",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     *   ),
-     *  @OA\Parameter(
-     *      name="Last Name",
-     *      in="query",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     *   ),
-     *  @OA\Parameter(
-     *      name="email",
-     *      in="query",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     *   ),
-     *   @OA\Parameter(
-     *      name="password",
-     *      in="query",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="string"
-     *      )
-     *   ),
      *      @OA\Parameter(
      *      name="password_confirmation",
      *      in="query",

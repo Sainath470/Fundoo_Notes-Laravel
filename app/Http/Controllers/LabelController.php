@@ -13,10 +13,48 @@ use Illuminate\Support\Facades\DB;
 class LabelController extends Controller
 {
     /**
-     * Function to make a new label for the user in the data base
+     * @OA\Post(
+     ** path="/api/auth/makeLabel",
+     *   tags={"Make Label"},
+     *   summary="Make Label",
+     *   operationId="makeLabel",
      * 
-     * @param Request
-     * @return success message or error message
+     *  @OA\Parameter(
+     *      name="Label Name",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     *
+     * @return \Illuminate\Http\Response
      */
     public function createLabel(Request $request)
     {
@@ -33,11 +71,56 @@ class LabelController extends Controller
     }
 
     /**
-     * function to update the label name
+     * @OA\Post(
+     ** path="/api/auth/editLabelname",
+     *   tags={"Edit Label"},
+     *   summary="Edit Label",
+     *   operationId="editLabelname",
      * 
-     * @param Request
-     * 
-     * @return success message or error message based on validation
+     *  @OA\Parameter(
+     *      name="Label id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="Label Name",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     *
+     * @return \Illuminate\Http\Response
      */
     public function updateLabel(Request $request)
     {
@@ -56,8 +139,41 @@ class LabelController extends Controller
         }
     }
 
+     /**
+     * @OA\Get(
+     ** path="/api/auth/getLabels",
+     *   tags={"Get Labels"},
+     *   summary="Get Labels",
+     *   operationId="getLabels",
+     * 
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
     /**
-     * function to get all labels based on authorization
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getLabels()
     {
@@ -70,13 +186,49 @@ class LabelController extends Controller
         }
     }
 
+     /**
+     * @OA\Post(
+     ** path="/api/auth/deleteLabel",
+     *   tags={"Delete Label"},
+     *   summary="Delete Label",
+     *   operationId="deleteLabel",
+     * 
+     *  @OA\Parameter(
+     *      name="Label id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
     /**
-     * function to delete label 
-     * 
-     * @param Request 
-     * @param id that will be deleted
-     * 
-     * @return response 
+     *
+     * @return \Illuminate\Http\Response
      */
     public function deleteLabel(Request $request)
     {
@@ -94,13 +246,57 @@ class LabelController extends Controller
         }
     }
 
-    /**
-     * function to add note to label
-     * @param Request
-     * @param note_id note to be added
-     * @param label_id label to be added
+   /**
+     * @OA\Post(
+     ** path="/api/auth/addnotetolabel",
+     *   tags={"Add Note to Label"},
+     *   summary="Adding Note to Label",
+     *   operationId="addnotetolabel",
      * 
-     * @return response
+     *  @OA\Parameter(
+     *      name="Note id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="Label id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     *
+     * @return \Illuminate\Http\Response
      */
     public function addNoteToLabel(Request $request)
     {
@@ -126,11 +322,57 @@ class LabelController extends Controller
         return response()->json(['status' => 200, 'message' => 'note added to label successfully!']);
     }
 
-    /**
-     * function to delete the note from the label
-     * @param Request
-     * @param note_id
+   /**
+     * @OA\Post(
+     ** path="/api/auth/deletenotefromlabel",
+     *   tags={"Delete Note and Label"},
+     *   summary="Deleting Note and Label",
+     *   operationId="deletenotefromlabel",
      * 
+     *  @OA\Parameter(
+     *      name="Note id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="Label id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     *
+     * @return \Illuminate\Http\Response
      */
     public function deleteNoteFromLabel(Request $request)
     {
@@ -158,10 +400,57 @@ class LabelController extends Controller
         }
     }
     
-    /**
-     * function to get all the notes having label 
+      /**
+     * @OA\Post(
+     ** path="/api/auth/getAllNotesLabels",
+     *   tags={"Get All Notes with Labels"},
+     *   summary="Get All Notes with Labels",
+     *   operationId="getAllNotesLabels",
      * 
-     * @return notes with label name
+     *  @OA\Parameter(
+     *      name="Note id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *  @OA\Parameter(
+     *      name="Label id",
+     *      in="query",
+     *      required=true,
+     *      @OA\Schema(
+     *           type="string"
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=201,
+     *       description="Success",
+     *      @OA\MediaType(
+     *           mediaType="application/json",
+     *      )
+     *   ),
+     *   @OA\Response(
+     *      response=401,
+     *       description="Unauthenticated"
+     *   ),
+     *   @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     *   @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     *)
+     **/
+    /**
+     *
+     * @return \Illuminate\Http\Response
      */
     public function getAllNotesInLabels()
     {
