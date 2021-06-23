@@ -90,9 +90,11 @@ class JwtAuthController extends Controller
         $user = User::where('email', $email)->first();
 
         if (!$user) {
+            Log::channel('mydailylogs')->alert( "Invalid credentials! email doesn't exists");
             return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"], 401);
         }
         if (!$token = auth()->attempt($req->validated())) {
+            Log::channel('mydailylogs')->critical( 'Unauthenticated');
             return response()->json(['status' => 401, 'message' => 'Unauthenticated'], 401);
         }
         Log::channel('mydailylogs')->info('Login request:'.json_encode($request->all()));
@@ -211,13 +213,15 @@ class JwtAuthController extends Controller
 
         $userEmail = User::where('email', $email)->first();
         if ($userEmail) {
+            Log::channel('mydailylogs')->warning("This email already exists....");
             return response()->json(['status' => 201, 'message' => "This email already exists...."], 201);
         }
         if ($req2->fails()) {
+            Log::channel('mydailylogs')->warning("Password doesn't match");
             return response()->json(['status' => 400, 'message' => "Password doesn't match"], 400);
         }
         $user->save();
-        Log::channel('mydailylogs')->info('Register request:'.json_encode($request->all()));
+        Log::channel('mydailylogs')->info('Register request success:'.json_encode($request->all()));
         return response()->json([
             'status' => 201,
             'message' => 'User succesfully registered!'
@@ -235,8 +239,10 @@ class JwtAuthController extends Controller
         try {
             auth()->logout();
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->error("Token is invalid");
             return response()->json(['status' => 201, 'message' => 'Token is invalid'], 201);
         }
+        Log::channel('mydailylogs')->info('User logged out');
         return response()->json(['status' => 200, 'message' => 'User logged out'], 200);
     }
 
@@ -306,6 +312,7 @@ class JwtAuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!$user) {
+            Log::channel('mydailylogs')->error("email not found");
             return response()->json(['status' => 401, 'message' => "we can't find a user with that email address."], 401);
         }
         $passwordReset = PasswordReset::updateOrCreate(
@@ -319,6 +326,7 @@ class JwtAuthController extends Controller
         if ($user && $passwordReset) {
             $user->notify(new ResetPasswordNotification($passwordReset->token));
         }
+        Log::channel('mydailylogs')->info('reset password request sent:'.json_encode($request->all()));
         return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
     }
 
@@ -375,6 +383,7 @@ class JwtAuthController extends Controller
         ]);
 
         if ($validate->fails()) {
+            Log::channel('mydailylogs')->error("password doesn't match");
             return response()->json(['status' => 201, 'message' => "Password doesn't match"]);
         }
         $passwordReset = PasswordReset::where([
@@ -382,16 +391,19 @@ class JwtAuthController extends Controller
         ])->first();
 
         if (!$passwordReset) {
+            Log::channel('mydailylogs')->critical('This token is invalid');
             return response()->json(['status' => 201, 'message' => 'This token is invalid'], 201);
         }
         $user = User::where('email', $passwordReset->email)->first();
 
         if (!$user) {
+            Log::channel('mydailylogs')->warning("Email not found");
             return response()->json(['status' => 201, 'message' => "we can't find the user with that e-mail address"], 201);
         } else {
             $user->password = bcrypt($request->new_password);
             $user->save();
             $passwordReset->delete();
+            Log::channel('mydailylogs')->info('Password reset successfull!');
             return response()->json(['status' => 200, 'message' => 'Password reset successfull!']);
         }
     }

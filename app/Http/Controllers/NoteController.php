@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\NotesModel;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class NoteController extends Controller
 {
@@ -72,8 +73,10 @@ class NoteController extends Controller
             $note->user_id = Auth::user()->id;
             $note->save();
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->error('token is invalid');
             return response()->json(['status' => 404, 'message' => 'Invalid authorization token is invalid'], 404);
         }
+        Log::channel('mydailylogs')->info('Note created successfully');
         return response()->json(['status' => 200, 'message' => 'Note created']);
     }
 
@@ -120,6 +123,7 @@ class NoteController extends Controller
             $notes->user_id = auth()->id();
             return DB::table('notes')->select('id', 'title', 'description')->where('user_id', $notes->user_id)->get();
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->error('Invalid token');
             return response()->json(['status' => 201, 'message' => 'Invalid token']);
         }
     }
@@ -190,12 +194,15 @@ class NoteController extends Controller
         try {
             $note = NotesModel::findOrFail($id);
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->error("Note not available");
             return response()->json(['status' => 422, 'message' => "Notes are not available with that id"], 422);
         }
         if ($note->user_id == auth()->id()) {
             $note->title = $request->input('title');
             $note->description = $request->input('description');
             $note->save();
+            
+            Log::channel('mydailylogs')->info("Note updated successfully");
             return response()->json(['status' => 200, "message" => "Note Updated!"]);
         }
     }
@@ -250,10 +257,12 @@ class NoteController extends Controller
         try {
             $note = NotesModel::findOrFail($id);
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->error("Invalid note id");
             return response()->json(['status' => 422, 'message' => "Invalid note id"], 422);
         }
         if ($note->user_id == auth()->id()) {
             if ($note->delete()) {
+                Log::channel('mydailylogs')->info("Note deleted successfully");
                 return response()->json(['status' => 200, 'message' => 'Note Deleted!']);
             }
         }

@@ -9,6 +9,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LabelController extends Controller
 {
@@ -64,8 +65,10 @@ class LabelController extends Controller
             $label->label_name = $request->input('label_name');
             $label->user_id = auth()->user()->id;
             $label->save();
+            Log::channel('mydailylogs')->info("Label created successfully");
             return response()->json(['status' => 200,  'message' => "Label created"]);
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->critical("Duplicate label name not allowed");
             return response()->json(['status' => 201,  'message' => "duplicate label name not allowed"], 201);
         }
     }
@@ -130,11 +133,13 @@ class LabelController extends Controller
         try {
             $label = Labels::findOrFail($id);
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->critical("Label not available");
             return response()->json(['status' => 201, 'message' => "label id not available"], 201);
         }
         if ($label->user_id == auth()->id()) {
             $label->label_name = $request->input('label_name');
             $label->save();
+            Log::channel('mydailylogs')->info("label updated successfully");
             return response()->json(['status' => 200, 'message' => "label updated!"]);
         }
     }
@@ -180,8 +185,10 @@ class LabelController extends Controller
         try {
             $label = new Labels();
             $table = $label->user_id = auth()->id();
+            Log::channel('mydailylogs')->Log::info("Retrieved all labels");
             return response()->json([User::find($table)->labelsModel]);
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->critical("token is invalid");
             return response()->json(['status' => 201, 'message' => "token is invalid"], 201);
         }
     }
@@ -237,10 +244,12 @@ class LabelController extends Controller
         try {
             $label = Labels::findOrFail($id);
         } catch (Exception $e) {
+            Log::channel('mydailylogs')->error("Invalid label");
             return response()->json(['status' => 422, 'message' => "Invalid label id"], 422);
         }
         if ($label->user_id == auth()->id()) {
             if ($label->delete()) {
+                Log::channel('mydailylogs')->info("label Deleted successfully");
                 return response()->json(['status' => 200, 'messaged' => 'label Deleted!']);
             }
         }
@@ -312,13 +321,16 @@ class LabelController extends Controller
         $userInLabelsTable = Labels::where('id', $request->input('label_id'))->value('user_id');
 
         if ($labelsNotes->user_id != $userInNotesTable) {
+            Log::channel('mydailylogs')->error("Note not available to add into label");
             return response()->json(['status' => 201, 'message' => 'note not available for this user!'], 201);
         }
         if ($labelsNotes->user_id != $userInLabelsTable) {
+            Log::channel('mydailylogs')->error("label not available");
             return response()->json(['status' => 201, 'message' => 'Label not available for this user!'], 201);
         }
 
         $labelsNotes->save();
+        Log::channel('mydailylogs')->info("Not added into label successfully");
         return response()->json(['status' => 200, 'message' => 'note added to label successfully!']);
     }
 
@@ -388,14 +400,17 @@ class LabelController extends Controller
         $userInLabelsTable = Labels::where('id', $request->input('label_id'))->value('user_id');
 
         if ($labelsNotes->user_id != $userInNotesTable) {
+            Log::channel('mydailylogs')->error("note not available for deleting");
             return response()->json(['status' => 201, 'message' => 'note not available for this user!'], 201);
         }
         if ($labelsNotes->user_id != $userInLabelsTable) {
+            Log::channel('mydailylogs')->error("Label not available for deleting");
             return response()->json(['status' => 201, 'message' => 'Label not available for this user!'], 201);
         }
         $labelsNotesId = LabelsNotes::where('note_id',  $labelsNotes->note_id)->where('label_id', $labelsNotes->label_id)->first();
 
         if ($labelsNotesId->delete()) {
+            Log::channel('mydailylogs')->info("Not deleted from label successfully");
             return response()->json(['status' => 200, 'message' => 'note deleted from label successfully!']);
         }
     }
@@ -465,8 +480,10 @@ class LabelController extends Controller
                 ->select('notes.id as note_id','notes.title', 'notes.description', 'labels.label_name', 'labels.id as label_id')
                 ->where('labels_notes.user_id', $notes->user_id)
                 ->get();
+                Log::channel('mydailylogs')->info("Retrieved all notes and labels");
             return $data;
         } else {
+            Log::channel('mydailylogs')->critical("Unauthorized");
             return response()->json(['status' => 201, 'message' => 'Token is invalid!']);
         }
     }
