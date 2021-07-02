@@ -11,16 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-/** 
- * 
- *
- * 
- * @OA\SecurityScheme(
- *      securityScheme="bearer_token",
- *      type="http",
- *      scheme="bearer"
- * )
- */
+
 
 class JwtAuthController extends Controller
 {
@@ -91,11 +82,11 @@ class JwtAuthController extends Controller
 
         if (!$user) {
             Log::channel('mydailylogs')->alert( "Invalid credentials! email doesn't exists");
-            return response()->json(['status' => 401, 'message' => "Invalid credentials! email doesn't exists"], 401);
+            return response()->json(['status' => 400, 'message' => "Invalid credentials! email doesn't exists"]);
         }
         if (!$token = auth()->attempt($req->validated())) {
             Log::channel('mydailylogs')->critical( 'Unauthenticated');
-            return response()->json(['status' => 401, 'message' => 'Unauthenticated'], 401);
+            return response()->json(['status' => 401, 'message' => 'Unauthenticated']);
         }
         Log::channel('mydailylogs')->info('Login request:'.json_encode($request->all()));
         return $this->generateToken($token);
@@ -214,11 +205,12 @@ class JwtAuthController extends Controller
         $userEmail = User::where('email', $email)->first();
         if ($userEmail) {
             Log::channel('mydailylogs')->warning("This email already exists....");
-            return response()->json(['status' => 201, 'message' => "This email already exists...."], 201);
+            return response()->json(['status' => 409, 'message' => "This email already exists...."]);
         }
+        
         if ($req2->fails()) {
             Log::channel('mydailylogs')->warning("Password doesn't match");
-            return response()->json(['status' => 400, 'message' => "Password doesn't match"], 400);
+            return response()->json(['status' => 403, 'message' => "Password doesn't match"]);
         }
         $user->save();
         Log::channel('mydailylogs')->info('Register request success:'.json_encode($request->all()));
@@ -313,7 +305,7 @@ class JwtAuthController extends Controller
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             Log::channel('mydailylogs')->error("email not found");
-            return response()->json(['status' => 401, 'message' => "we can't find a user with that email address."], 401);
+            return response()->json(['status' => 401, 'message' => "we can't find a user with that email address."]);
         }
         $passwordReset = PasswordReset::updateOrCreate(
             ['email' => $user->email],
@@ -387,12 +379,12 @@ class JwtAuthController extends Controller
             return response()->json(['status' => 201, 'message' => "Password doesn't match"]);
         }
         $passwordReset = PasswordReset::where([
-            ['token', $request->bearerToken()]
+            ['token', $request->token]
         ])->first();
 
         if (!$passwordReset) {
             Log::channel('mydailylogs')->critical('This token is invalid');
-            return response()->json(['status' => 201, 'message' => 'This token is invalid'], 201);
+            return response()->json(['status' => 401, 'message' => 'This token is invalid']);
         }
         $user = User::where('email', $passwordReset->email)->first();
 
@@ -404,7 +396,7 @@ class JwtAuthController extends Controller
             $user->save();
             $passwordReset->delete();
             Log::channel('mydailylogs')->info('Password reset successfull!');
-            return response()->json(['status' => 200, 'message' => 'Password reset successfull!']);
+            return response()->json(['status' => 201, 'message' => 'Password reset successfull!']);
         }
     }
 }

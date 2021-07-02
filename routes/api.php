@@ -3,7 +3,6 @@
 use App\Http\Controllers\JwtAuthController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\NoteController;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*

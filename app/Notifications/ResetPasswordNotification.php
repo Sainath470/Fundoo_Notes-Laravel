@@ -42,11 +42,11 @@ class ResetPasswordNotification extends Notification
      */
     public function toMail($temp)
     {
+        $url = url("http://localhost:8080/resetPassword/$this->token");
         return (new MailMessage)
                     ->subject(Lang::get('Reset Password Link!'))
                     ->line(Lang::get('You are receiving this email because we received a request for password reset'))
-                    ->line(Lang::get('Copy the token'))
-                    ->with($this->token)
+                    ->action('Reset Password', url($url))
                     ->line('If you did not request a password reset, no further action is required!');
                    
     }
