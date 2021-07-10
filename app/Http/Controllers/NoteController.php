@@ -74,10 +74,10 @@ class NoteController extends Controller
             $note->save();
         } catch (Exception $e) {
             Log::channel('mydailylogs')->error('token is invalid');
-            return response()->json(['status' => 403, 'message' => 'Invalid authorization token is invalid']);
+            return response()->json(['status' => 404, 'message' => 'Invalid authorization token is invalid'], 404);
         }
         Log::channel('mydailylogs')->info('Note created successfully');
-        return response()->json(['status' => 201, 'message' => 'Note created']);
+        return response()->json(['status' => 200, 'message' => 'Note created']);
     }
 
     /**
@@ -201,7 +201,7 @@ class NoteController extends Controller
             $note->title = $request->input('title');
             $note->description = $request->input('description');
             $note->save();
-
+            
             Log::channel('mydailylogs')->info("Note updated successfully");
             return response()->json(['status' => 200, "message" => "Note Updated!"]);
         }
