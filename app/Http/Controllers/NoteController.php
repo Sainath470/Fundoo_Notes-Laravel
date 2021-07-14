@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\NotesModel;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -77,7 +78,7 @@ class NoteController extends Controller
             return response()->json(['status' => 404, 'message' => 'Invalid authorization token is invalid'], 404);
         }
         Log::channel('mydailylogs')->info('Note created successfully');
-        return response()->json(['status' => 200, 'message' => 'Note created']);
+        return response()->json(['status' => 201, 'message' => 'Note created']);
     }
 
     /**
@@ -118,14 +119,19 @@ class NoteController extends Controller
      */
     public function getNotes()
     {
-        try {
-            $notes = new NotesModel();
-            $notes->user_id = auth()->id();
-            return DB::table('notes')->select('id', 'title', 'description')->where('user_id', $notes->user_id)->get();
-        } catch (Exception $e) {
-            Log::channel('mydailylogs')->error('Invalid token');
-            return response()->json(['status' => 201, 'message' => 'Invalid token']);
+        $notes = new NotesModel();
+        $notes->user_id = auth()->id();
+
+        if ($notes->user_id == auth()->id()) {
+            return NotesModel::select('id', 'title', 'description')
+                ->where([
+                    ['user_id', '=', $notes->user_id],
+                    ['notes', '=', '0']
+                ])
+                ->get();
         }
+        Log::channel('mydailylogs')->error('Invalid token');
+        return response()->json(['status' => 403, 'message' => 'Invalid token']);
     }
 
     /**
@@ -195,15 +201,15 @@ class NoteController extends Controller
             $note = NotesModel::findOrFail($id);
         } catch (Exception $e) {
             Log::channel('mydailylogs')->error("Note not available");
-            return response()->json(['status' => 422, 'message' => "Notes are not available with that id"], 422);
+            return response()->json(['status' => 422, 'message' => "Notes are not available with that id"]);
         }
         if ($note->user_id == auth()->id()) {
             $note->title = $request->input('title');
             $note->description = $request->input('description');
             $note->save();
-            
+
             Log::channel('mydailylogs')->info("Note updated successfully");
-            return response()->json(['status' => 200, "message" => "Note Updated!"]);
+            return response()->json(['status' => 201, "message" => "Note Updated!"]);
         }
     }
 
@@ -251,20 +257,63 @@ class NoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function deleteNote(Request $request)
+    public function deleteNoteFromDisplayNotes(Request $request)
+    {
+        $id = $request->input('id');
+        $note = NotesModel::findOrFail($id);
+
+        if ($note->user_id == auth()->id()) {
+            $note = NotesModel::where('id', $id)
+                ->Update(array('notes' => '1',));
+            return response()->json(['status' => 201, 'message' => 'note moved to trash successfully']);
+        }
+        return response()->json(['status' => 403, 'message' => 'note id does not exist']);
+    }
+
+    public function displayNotesInTrash()
+    {
+        $notes = new NotesModel();
+        $notes->user_id = auth()->id();
+
+        if ($notes->user_id == auth()->id()) {
+            return NotesModel::select('id', 'title', 'description')
+                ->where([
+                    ['user_id', '=', $notes->user_id],
+                    ['notes', '=', '1']
+                ])
+                ->get();
+        }
+        Log::channel('mydailylogs')->error('Invalid token');
+        return response()->json(['status' => 403, 'message' => 'Invalid token']);
+    }
+
+    public function deleteNoteForever(Request $request)
     {
         $id = $request->input('id');
         try {
             $note = NotesModel::findOrFail($id);
         } catch (Exception $e) {
             Log::channel('mydailylogs')->error("Invalid note id");
-            return response()->json(['status' => 422, 'message' => "Invalid note id"], 422);
+            return response()->json(['status' => 422, 'message' => "Invalid note id"]);
         }
         if ($note->user_id == auth()->id()) {
             if ($note->delete()) {
                 Log::channel('mydailylogs')->info("Note deleted successfully");
-                return response()->json(['status' => 200, 'message' => 'Note Deleted!']);
+                return response()->json(['status' => 201, 'message' => 'Note Deleted!']);
             }
         }
+    }
+
+    public function restoreNoteToDisplayNotes(Request $request)
+    {
+        $id = $request->input('id');
+        $note = NotesModel::findOrFail($id);
+
+        if ($note->user_id == auth()->id()) {
+            $note = NotesModel::where('id', $id)
+                ->Update(array('notes' => '0',));
+            return response()->json(['status' => 201, 'message' => 'note restored']);
+        }
+        return response()->json(['status' => 403, 'message' => 'note id does not exist']);
     }
 }

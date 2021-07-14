@@ -81,14 +81,14 @@ class JwtAuthController extends Controller
         $user = User::where('email', $email)->first();
 
         if (!$user) {
-            Log::channel('mydailylogs')->alert( "Invalid credentials! email doesn't exists");
+            Log::channel('mydailylogs')->alert("Invalid credentials! email doesn't exists");
             return response()->json(['status' => 400, 'message' => "Invalid credentials! email doesn't exists"]);
         }
         if (!$token = auth()->attempt($req->validated())) {
-            Log::channel('mydailylogs')->critical( 'Unauthenticated');
+            Log::channel('mydailylogs')->critical('Unauthenticated');
             return response()->json(['status' => 401, 'message' => 'Unauthenticated']);
         }
-        Log::channel('mydailylogs')->info('Login request:'.json_encode($request->all()));
+        Log::channel('mydailylogs')->info('Login request:' . json_encode($request->all()));
         return $this->generateToken($token);
     }
 
@@ -101,7 +101,7 @@ class JwtAuthController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'succesfully logged in',
-            'access_token' => $token
+            'token' => $token
         ]);
     }
 
@@ -207,13 +207,13 @@ class JwtAuthController extends Controller
             Log::channel('mydailylogs')->warning("This email already exists....");
             return response()->json(['status' => 409, 'message' => "This email already exists...."]);
         }
-        
+
         if ($req2->fails()) {
             Log::channel('mydailylogs')->warning("Password doesn't match");
             return response()->json(['status' => 403, 'message' => "Password doesn't match"]);
         }
         $user->save();
-        Log::channel('mydailylogs')->info('Register request success:'.json_encode($request->all()));
+        Log::channel('mydailylogs')->info('Register request success:' . json_encode($request->all()));
         return response()->json([
             'status' => 201,
             'message' => 'User succesfully registered!'
@@ -318,7 +318,7 @@ class JwtAuthController extends Controller
         if ($user && $passwordReset) {
             $user->notify(new ResetPasswordNotification($passwordReset->token));
         }
-        Log::channel('mydailylogs')->info('reset password request sent:'.json_encode($request->all()));
+        Log::channel('mydailylogs')->info('reset password request sent:' . json_encode($request->all()));
         return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
     }
 

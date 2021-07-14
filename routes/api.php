@@ -30,27 +30,26 @@ Route::group([
     Route::post('forgotPassword', [JwtAuthController::class, 'forgotPassword']);
     Route::post('resetPassword', [JwtAuthController::class, 'resetPassword']);
 
-
-/**
- * routes for Note controller
- */
-    Route::post('addNotes',[NoteController::class, 'createNote']);
+    /**
+     * routes for Note controller
+     */
+    Route::post('addNotes', [NoteController::class, 'createNote']);
     Route::get('getNotes', [NoteController::class, 'getNotes']);
-    Route::post('updateNote',[NoteController::class, 'updateNote']);
-    Route::post('deleteNote', [NoteController::class, 'deleteNote']);
+    Route::put('updateNote', [NoteController::class, 'updateNote']);
+    Route::post('deleteNoteFromDisplayNotes', [NoteController::class, 'deleteNoteFromDisplayNotes']);
+    Route::get('trashNotes', [NoteController::class, 'displayNotesInTrash']);
+    Route::post('deleteNoteForever', [NoteController::class, 'deleteNoteForever']);
+    Route::post('restoreNote', [NoteController::class, 'restoreNoteToDisplayNotes']);
 
-/**
- * routes for Label controller
- */
+    /**
+     * routes for Label controller
+     */
     Route::post('makeLabel', [LabelController::class, 'createLabel']);
     Route::post('noteToLabel', [LabelController::class, 'addNoteToLabel']);
     Route::post('editLabelname', [LabelController::class, 'updateLabel']);
     Route::post('deleteLabel', [LabelController::class, 'deleteLabel']);
     Route::post('getLabels', [LabelController::class, 'getLabels']);
     Route::post('addnotetolabel', [LabelController::class, ' addNoteToLabel']);
-    Route::post('deletenotefromlabel', [LabelController::class,'deleteNoteFromLabel']);
-    Route::get('getAllNotesLabels', [LabelController::class,'getAllNotesInLabels']);
+    Route::post('deletenotefromlabel', [LabelController::class, 'deleteNoteFromLabel']);
+    Route::get('getAllNotesLabels', [LabelController::class, 'getAllNotesInLabels']);
 });
-
-
-

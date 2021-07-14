@@ -19,10 +19,11 @@ class CreateNotesTable extends Migration
             $table->string('title');
             $table->string('description');
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->enum('notes', [0, 1])->default(0);
             $table->timestamps();
         });
     }
