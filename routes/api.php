@@ -40,6 +40,9 @@ Route::group([
     Route::get('trashNotes', [NoteController::class, 'displayNotesInTrash']);
     Route::post('deleteNoteForever', [NoteController::class, 'deleteNoteForever']);
     Route::post('restoreNote', [NoteController::class, 'restoreNoteToDisplayNotes']);
+    Route::post('archive', [NoteController::class, 'moveNoteToArchive']);
+    Route::post('restoreArchive', [NoteController::class, 'restoreNoteToDisplayNotes']);
+    Route::get('archiveNotes', [NoteController::class, 'displayNotesInArchive']);
 
     /**
      * routes for Label controller

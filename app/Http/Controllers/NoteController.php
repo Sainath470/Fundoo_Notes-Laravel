@@ -270,6 +270,19 @@ class NoteController extends Controller
         return response()->json(['status' => 403, 'message' => 'note id does not exist']);
     }
 
+    public function moveNoteToArchive(Request $request)
+    {
+        $id = $request->input('id');
+        $note = NotesModel::findOrFail($id);
+
+        if ($note->user_id == auth()->id()) {
+            $note = NotesModel::where('id', $id)
+                ->Update(array('notes' => '2',));
+            return response()->json(['status' => 201, 'message' => 'note moved to Archive successfully']);
+        }
+        return response()->json(['status' => 403, 'message' => 'note id does not exist']);
+    }
+
     public function displayNotesInTrash()
     {
         $notes = new NotesModel();
@@ -315,5 +328,22 @@ class NoteController extends Controller
             return response()->json(['status' => 201, 'message' => 'note restored']);
         }
         return response()->json(['status' => 403, 'message' => 'note id does not exist']);
+    }
+
+    public function displayNotesInArchive()
+    {
+        $notes = new NotesModel();
+        $notes->user_id = auth()->id();
+
+        if ($notes->user_id == auth()->id()) {
+            return NotesModel::select('id', 'title', 'description')
+                ->where([
+                    ['user_id', '=', $notes->user_id],
+                    ['notes', '=', '2']
+                ])
+                ->get();
+        }
+        Log::channel('mydailylogs')->error('Invalid token');
+        return response()->json(['status' => 403, 'message' => 'Invalid token']);
     }
 }
